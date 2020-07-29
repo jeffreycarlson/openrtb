@@ -65,11 +65,32 @@ If a DSP has at least one SKAdNetworkItem in the publisher app’s `Info.plist` 
         array
       </td>
       <td>
-        ["dsp1.skadnetwork"]
+        "skadnetids": ["dsp1.skadnetwork"]
       </td>
     </tr>
   </tbody>
 </table>
+
+#### Example
+
+```
+{
+  "imp": [
+    {
+      "ext": {
+        "skadn": {
+          "version": "2.0",
+          "sourceapp": "880047117",
+          "skadnetids": [
+            "dsp1.skadnetwork",
+            "dsp2.skadnetwork"
+          ]
+        }
+      }
+    }
+  ]
+}
+```
 
 ### Bid response
 
@@ -169,7 +190,7 @@ If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP co
         <code>sourceapp</code>
       </td>
       <td>
-        ID of publisher’s app in Apple’s app store. Should match `BidRequest.imp.ext.skad.sourceapp`
+        ID of publisher’s app in Apple’s app store. Should match <code>BidRequest.imp.ext.skad.sourceapp</code>
       </td>
       <td>
         string
@@ -209,6 +230,33 @@ If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP co
   </tbody>
 </table>
 
+#### Example
+
+```
+{
+  "seatbid": [
+    {
+      "bid": [
+        {
+          "ext": {
+            "skadn": {
+              "version": "2.0",
+              "network": "dsp1.skadnetwork",
+              "campaign": "45",
+              "itunesitem": "880047117",
+              "nonce": "473b1a16-b4ef-43ad-9591-fcf3aefa82a7",
+              "sourceapp": "123456789",
+              "timestamp": "1594406341",
+              "signature": "MEQCIEQlmZRNfYzKBSE8QnhLTIHZZZWCFgZpRqRxHss65KoFAiAJgJKjdrWdkLUOCCjuEx2RmFS7daRzSVZRVZ8RyMyUXg=="
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
 ### SKAdNetwork Support Flow
 
 ![iOS 14 SKAdNetwork Flowchart][3]
@@ -227,5 +275,5 @@ _Flow diagram of SSP SDK’s SKAdNetwork support. Objects in blue have a change 
 
 [1]: https://developer.apple.com/documentation/storekit/skadnetwork
 [2]: https://developer.apple.com/documentation/storekit/skadnetwork/configuring_the_participating_apps
-[3]: https://raw.githubusercontent.com/mopub/mopub-docs/main/assets/images/docs/dsps/skadnetwork-flow%402x.png
+[3]: https://d2al1opqne3nsh.cloudfront.net/images/skadnetwork-flow@2x.png
 [4]: https://developer.apple.com/documentation/storekit/skadnetwork/generating_the_signature_to_validate_an_installation
