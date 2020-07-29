@@ -45,7 +45,7 @@ If a DSP has at least one SKAdNetworkItem in the publisher app’s `Info.plist` 
         <code>sourceapp</code>
       </td>
       <td>
-        ID of publisher app in Apple’s App Store. Should match `BidRequest.app.bundle`
+        ID of publisher app in Apple’s App Store. Should match <code>BidRequest.app.bundle</code>
       </td>
       <td>
         string
@@ -141,7 +141,7 @@ If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP co
         <code>itunesitem</code>
       </td>
       <td>
-        ID of advertiser’s app in Apple’s app store. Should match `BidResponse.bid.bundle`
+        ID of advertiser’s app in Apple’s app store. Should match <code>BidResponse.bid.bundle</code>
       </td>
       <td>
         string
