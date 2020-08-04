@@ -65,7 +65,7 @@ If a DSP has at least one SKAdNetworkItem in the publisher app’s `Info.plist` 
         array
       </td>
       <td>
-        "skadnetids": ["dsp1.skadnetwork"]
+        "skadnetids": ["cDkw7geQsH.skadnetwork","qyJfv329m4.skadnetwork"]
       </td>
     </tr>
   </tbody>
@@ -140,7 +140,7 @@ If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP co
         string
       </td>
       <td>
-        "network":"dsp1.skadnetwork"
+        "network":"cDkw7geQsH.skadnetwork"
       </td>
     </tr>
     <tr>
