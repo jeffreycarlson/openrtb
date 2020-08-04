@@ -65,7 +65,7 @@ If a DSP has at least one SKAdNetworkItem in the publisher app’s `Info.plist` 
         array
       </td>
       <td>
-        "skadnetids": ["cDkw7geQsH.skadnetwork","qyJfv329m4.skadnetwork"]
+        "skadnetids": ["cDkw7geQsH.skadnetwork", "qyJfv329m4.skadnetwork"]
       </td>
     </tr>
   </tbody>
@@ -82,8 +82,8 @@ If a DSP has at least one SKAdNetworkItem in the publisher app’s `Info.plist` 
           "version": "2.0",
           "sourceapp": "880047117",
           "skadnetids": [
-            "dsp1.skadnetwork",
-            "dsp2.skadnetwork"
+            "cDkw7geQsH.skadnetwork",
+            "qyJfv329m4.skadnetwork"
           ]
         }
       }
@@ -241,7 +241,7 @@ If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP co
           "ext": {
             "skadn": {
               "version": "2.0",
-              "network": "dsp1.skadnetwork",
+              "network": "cDkw7geQsH.skadnetwork",
               "campaign": "45",
               "itunesitem": "880047117",
               "nonce": "473b1a16-b4ef-43ad-9591-fcf3aefa82a7",
