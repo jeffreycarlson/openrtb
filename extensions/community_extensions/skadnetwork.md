@@ -37,7 +37,7 @@ If a DSP has at least one SKAdNetworkItem in the publisher app’s `Info.plist` 
         string
       </td>
       <td>
-        "version":"2.0"
+        "version": "2.0"
       </td>
     </tr>
     <tr>
@@ -51,7 +51,7 @@ If a DSP has at least one SKAdNetworkItem in the publisher app’s `Info.plist` 
         string
       </td>
       <td>
-        "sourceapp":"880047117"
+        "sourceapp": "880047117"
       </td>
     </tr>
     <tr>
@@ -66,6 +66,20 @@ If a DSP has at least one SKAdNetworkItem in the publisher app’s `Info.plist` 
       </td>
       <td>
         "skadnetids": ["cDkw7geQsH.skadnetwork", "qyJfv329m4.skadnetwork"]
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>ext</code>
+      </td>
+      <td>
+        Placeholder for exchange-specific extensions to OpenRTB.
+      </td>
+      <td>
+        object
+      </td>
+      <td>
+        "ext": {}
       </td>
     </tr>
   </tbody>
@@ -126,7 +140,7 @@ If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP co
         string
       </td>
       <td>
-        "version":"2.0"
+        "version": "2.0"
       </td>
     </tr>
     <tr>
@@ -140,7 +154,7 @@ If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP co
         string
       </td>
       <td>
-        "network":"cDkw7geQsH.skadnetwork"
+        "network": "cDkw7geQsH.skadnetwork"
       </td>
     </tr>
     <tr>
@@ -154,7 +168,7 @@ If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP co
         string
       </td>
       <td>
-        "campaign":"45"
+        "campaign": "45"
       </td>
     </tr>
     <tr>
@@ -168,7 +182,7 @@ If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP co
         string
       </td>
       <td>
-        "itunesitem":"880047117"
+        "itunesitem": "880047117"
       </td>
     </tr>
     <tr>
@@ -182,7 +196,7 @@ If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP co
         string
       </td>
       <td>
-        "nonce":"473b1a16-b4ef-43ad-9591-fcf3aefa82a7"
+        "nonce": "473b1a16-b4ef-43ad-9591-fcf3aefa82a7"
       </td>
     </tr>
     <tr>
@@ -196,7 +210,7 @@ If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP co
         string
       </td>
       <td>
-        "sourceapp":"123456789"
+        "sourceapp": "123456789"
       </td>
     </tr>
     <tr>
@@ -225,6 +239,20 @@ If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP co
       </td>
       <td>
         "signature": "MEQCIEQlmZRNfYzK…"
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>ext</code>
+      </td>
+      <td>
+        Placeholder for exchange-specific extensions to OpenRTB.
+      </td>
+      <td>
+        object
+      </td>
+      <td>
+        "ext": {}
       </td>
     </tr>
   </tbody>
