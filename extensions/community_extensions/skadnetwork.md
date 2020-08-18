@@ -1,4 +1,4 @@
-### SKAdNetwork
+## SKAdNetwork
 
 Sponsors: MoPub, Fyber
 
@@ -70,6 +70,20 @@ If a DSP has at least one SKAdNetworkItem in the publisher app’s `Info.plist` 
     </tr>
     <tr>
       <td>
+        skadnhsh
+      </td>
+      <td>
+        A hash of the full list of SKAdNetworkItem entries. Hash table will be provided outside the bidstream for DSPs to consume. See <a href="#skadnetwork-ids-hash">SKAdNetwork IDs Hash</a> for more details.
+      </td>
+      <td>
+        string
+      </td>
+      <td class="text-monospace">
+        "93f901d8b1cc722e48d6bbe46f2e4ce38fb851f857131fa429eaed2489453b52"
+      </td>
+    </tr>
+    <tr>
+      <td>
         <code>ext</code>
       </td>
       <td>
@@ -85,7 +99,9 @@ If a DSP has at least one SKAdNetworkItem in the publisher app’s `Info.plist` 
   </tbody>
 </table>
 
-#### Example
+#### Example for `skadnetids`
+
+Used for direct SSP to DSP connections where a DSP wants to only consume their own relevant SKAdNetwork IDs.
 
 ```
 {
@@ -99,6 +115,25 @@ If a DSP has at least one SKAdNetworkItem in the publisher app’s `Info.plist` 
             "cDkw7geQsH.skadnetwork",
             "qyJfv329m4.skadnetwork"
           ]
+        }
+      }
+    }
+  ]
+}
+```
+
+#### Example for `skadnhsh`
+
+Used for intermedary SSP to SSP/DSP to DSP connections where a full list SKAdNetwork IDs is required. Provided in a compact hash format. See <a href="#skadnetwork-ids-hash">SKAdNetwork IDs Hash</a> for more details.
+```
+{
+  "imp": [
+    {
+      "ext": {
+        "skadn": {
+          "version": "2.0",
+          "sourceapp": "880047117",
+          "skadnhsh": "93f901d8b1cc722e48d6bbe46f2e4ce38fb851f857131fa429eaed2489453b52"
         }
       }
     }
@@ -301,7 +336,114 @@ _Flow diagram of SSP SDK’s SKAdNetwork support. Objects in blue have a change 
 8. (Optional). Target app can choose to provide an additional 6 bits of conversion value information.
 9. If SKAdNetwork determines that the DSP’s click led to the install, Apple will send a postback to the DSP’s registered endpoint with the ids of the source app, target app and campaign, and conversion value if provided by the target app.
 
+### SKAdNetwork IDs Hash
+
+Problem: How to represent large lists of IDs programmatically where there may not be a standard list or there is publisher customization?
+
+Solution/Implementation: SSP/SDK retrieves a list of all SKAdNetwork IDs and generates a standardized hash of the values. These hashes would be identical across SSP/SDK networks. The hashes would be available in a downloadable table, giving everyone access to a full list of IDs on each app version. A standardized list could be generated easily from the client device, simplifying transmission for prebid or other use cases.
+
+Generating the standard hash:
+1. Pull all SKAdNetwork IDs from Info.plist
+2. String to lower (assumes Apple SKAdNetwork IDs are case insensitive, checking with Apple to confirm)
+3. Sort Ascending
+4. Dedupe
+5. Concatenate comma-separated (no whitespace)
+6. Use SHA256 function to hash IDs
+
+Example:
+
+Grab list from Info.plist:
+```
+2U9PT9HC89.skadnetwork
+4FZDC2EVR5.skadnetwork
+7UG5ZH24HU.skadnetwork
+mlmmfzh3r3.skadnetwork
+T38B2KH725.skadnetwork
+W9Q455WK68.skadnetwork
+YCLNXRL5PM.skadnetwork
+```
+
+Process list:
+```
+2U9PT9HC89.skadnetwork,4FZDC2EVR5.skadnetwork,7UG5ZH24HU.skadnetwork,mlmmfzh3r3.skadnetwork,T38B2KH725.skadnetwork,W9Q455WK68.skadnetwork,YCLNXRL5PM.skadnetwork
+```
+
+Output using SHA256:
+```
+93f901d8b1cc722e48d6bbe46f2e4ce38fb851f857131fa429eaed2489453b52
+```
+
+Looking up the above hash in the lookup table (provided for download/API from SSP) will yield the list:
+```
+2U9PT9HC89.skadnetwork,4FZDC2EVR5.skadnetwork,7UG5ZH24HU.skadnetwork,mlmmfzh3r3.skadnetwork,T38B2KH725.skadnetwork,W9Q455WK68.skadnetwork,YCLNXRL5PM.skadnetwork
+```
+
+## Device
+
+If the IDFA is not available, DSPs require an alternative, limited-scope device ID in order to provide basic non-targeting functionality to advertisers. The [IDFV][5] is the same for apps from the same vendor but different across vendors.
+
+DSPs may also want to understand what is the status of a user on iOS 14+. The `atts` field will pass the AppTrackingTransparency Framework's [authorization status][6].
+
+### Bid request
+
+#### Object: `BidRequest.device.ext`
+
+<table class="table mp-openrtb-table">
+  <thead>
+    <tr>
+      <th>
+        Attribute
+      </th>
+      <th>
+        Description
+      </th>
+      <th>
+        Type
+      </th>
+      <th>
+        Example
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        atts
+      </td>
+      <td>
+        (iOS Only) An integer passed to represent the app's app tracking authorization status, where <br>
+        1 = authorized, <br>
+        2 = denied, <br>
+        3 = not determined, <br>
+        4 = restricted <br>
+      </td>
+      <td>
+        integer
+      </td>
+      <td class="text-monospace">
+        "atts": 4
+      </td>
+    </tr>
+    <tr>
+      <td>
+        ifv
+      </td>
+      <td>
+        IDFV of device in that publisher. Only passed when IDFA is unavailable or all zeros. Listed as ifv to match ifa field format.
+      </td>
+      <td>
+        string
+      </td>
+      <td class="text-monospace">
+        "ifv": "336F2BC0-245B-4242-8029-83762AB47B15"
+      </td>
+    </tr>
+  </tbody>
+</table>
+
 [1]: https://developer.apple.com/documentation/storekit/skadnetwork
 [2]: https://developer.apple.com/documentation/storekit/skadnetwork/configuring_the_participating_apps
 [3]: https://d2al1opqne3nsh.cloudfront.net/images/skadnetwork-flow@2x.png
 [4]: https://developer.apple.com/documentation/storekit/skadnetwork/generating_the_signature_to_validate_an_installation
+[5]: https://developer.apple.com/documentation/uikit/uidevice/1620059-identifierforvendor
+[6]: https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/authorizationstatus
