@@ -380,7 +380,7 @@ Looking up the above hash in the lookup table (provided for download/API from SS
 
 ## Device
 
-If the IDFA is not available, DSPs require an alternative, limited-scope device ID in order to provide basic non-targeting functionality to advertisers. The [IDFV][5] is the same for apps from the same vendor but different across vendors.
+If the IDFA is not available, DSPs require an alternative, limited-scope device ID in order to provide basic frequency capping functionality to advertisers. The [IDFV][5] is the same for apps from the same vendor but different across vendors. This field is only passed when IDFA is unavailable or all zeros and should.
 
 DSPs may also want to understand what is the status of a user on iOS 14+. The `atts` field will pass the AppTrackingTransparency Framework's [authorization status][6].
 
@@ -388,7 +388,7 @@ DSPs may also want to understand what is the status of a user on iOS 14+. The `a
 
 #### Object: `BidRequest.device.ext`
 
-<table class="table mp-openrtb-table">
+<table>
   <thead>
     <tr>
       <th>
@@ -412,16 +412,16 @@ DSPs may also want to understand what is the status of a user on iOS 14+. The `a
       </td>
       <td>
         (iOS Only) An integer passed to represent the app's app tracking authorization status, where <br>
-        1 = authorized, <br>
-        2 = denied, <br>
-        3 = not determined, <br>
-        4 = restricted <br>
+        0 = not determined <br>
+        1 = restricted <br>
+        2 = denied <br>
+        3 = authorized
       </td>
       <td>
         integer
       </td>
       <td class="text-monospace">
-        "atts": 4
+        "atts": 3
       </td>
     </tr>
     <tr>
@@ -440,6 +440,22 @@ DSPs may also want to understand what is the status of a user on iOS 14+. The `a
     </tr>
   </tbody>
 </table>
+
+#### Example
+
+```
+{
+  "device": [
+    {
+      "ext": {
+        "atts": 3,
+        "ifv": "336F2BC0-245B-4242-8029-83762AB47B15"
+        }
+      }
+    }
+  ]
+}
+```
 
 [1]: https://developer.apple.com/documentation/storekit/skadnetwork
 [2]: https://developer.apple.com/documentation/storekit/skadnetwork/configuring_the_participating_apps
