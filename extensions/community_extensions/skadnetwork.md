@@ -445,15 +445,12 @@ DSPs may also want to understand what is the status of a user on iOS 14+. The `a
 
 ```
 {
-  "device": [
-    {
-      "ext": {
-        "atts": 3,
-        "ifv": "336F2BC0-245B-4242-8029-83762AB47B15"
-        }
-      }
+  "device": {
+    "ext": {
+      "atts": 3,
+      "ifv": "336F2BC0-245B-4242-8029-83762AB47B15"
     }
-  ]
+  }
 }
 ```
 
