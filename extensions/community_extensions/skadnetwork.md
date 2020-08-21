@@ -2,6 +2,31 @@
 
 Sponsors: MoPub, Fyber
 
+### Overview
+
+The IAB Tech Lab has introduced technical specifications aimed at adapting Apple’s SKAdNetwork, a method for validating advertiser app installations, for programmatic ad buying.
+
+The responsibilities of each participant when using the SKAdNetwork specifications are as follows.
+
+SSP/SDK responsibilities are to:
+1. Provide publishers with access to their buying entities SKAdNetwork IDs through a publicly hosted JSON file on their own business domain (domain.com/skadnetworkids.json)
+2. Support OpeRTB extension objects: `BidRequest.imp.ext.skadn` & `BidRequest.imp.ext.skadn`
+3. Assist intermediary buyers with accessing the full list SKAdNetwork IDs on the bid request, provided in a compact hash format `skadnhsh`
+4. Provide signed ads to the source app by calling `loadProduct()` with the appropriate data returned on the bid response
+
+DSP/intermediary/buying entities responsibilities are to:
+1. Provide SKAdNetwork IDs to each supply partner
+2. Support OpeRTB extension objects: `BidRequest.imp.ext.skadn` & `BidRequest.imp.ext.skadn`
+3. Return all necessary signed parameters to SSP/SDK to facilitate ad signatures and receive install validation postbacks at endpoint established during SKAdNetwork registration with Apple
+
+Publishers/source app’s responsibilities are to:
+1. Add the ad network’s ID to its Info.plist
+2. Update Info.plist with new entries added to SSP/SDK JSON file when publishing new app versions to the App Store
+
+### Regulatory Guidance
+
+OpenRTB implementations will need to ensure compliance on every transaction with all applicable regional legislation.
+
 ### Bid request
 
 If a DSP has at least one SKAdNetworkItem in the publisher app’s `Info.plist` we would include a new object in the bid request that provides the necessary information to create a signature. Object would only be present if both the SSP SDK version and the OS version (iOS 14.0+) support SKAdNetwork.
@@ -70,7 +95,7 @@ If a DSP has at least one SKAdNetworkItem in the publisher app’s `Info.plist` 
     </tr>
     <tr>
       <td>
-        skadnhsh
+        <code>skadnhsh</code>
       </td>
       <td>
         A hash of the full list of SKAdNetworkItem entries. Hash table will be provided outside the bidstream for DSPs to consume. See <a href="#skadnetwork-ids-hash">SKAdNetwork IDs Hash</a> for more details.
@@ -124,7 +149,7 @@ Used for direct SSP to DSP connections where a DSP wants to only consume their o
 
 #### Example for `skadnhsh`
 
-Used for intermedary SSP to SSP/DSP to DSP connections where a full list SKAdNetwork IDs is required. Provided in a compact hash format. See <a href="#skadnetwork-ids-hash">SKAdNetwork IDs Hash</a> for more details.
+Used for intermediary SSP to SSP/DSP to DSP connections where a full list SKAdNetwork IDs is required. Provided in a compact hash format. See <a href="#skadnetwork-ids-hash">SKAdNetwork IDs Hash</a> for more details.
 ```
 {
   "imp": [
@@ -340,7 +365,7 @@ _Flow diagram of SSP SDK’s SKAdNetwork support. Objects in blue have a change 
 
 Problem: How to represent large lists of IDs programmatically where there may not be a standard list or there is publisher customization?
 
-Solution/Implementation: SSP/SDK retrieves a list of all SKAdNetwork IDs and generates a standardized hash of the values. These hashes would be identical across SSP/SDK networks. The hashes would be available in a downloadable table, giving everyone access to a full list of IDs on each app version. A standardized list could be generated easily from the client device, simplifying transmission for prebid or other use cases.
+Solution/Implementation: SSP/SDK retrieves a list of all SKAdNetwork IDs and generates a standardized hash of the values. These hashes would be identical across SSP/SDK networks. A standardized list can easily be generated from the client device, simplifying transmission for prebid or other use cases.
 
 Generating the standard hash:
 1. Pull all SKAdNetwork IDs from Info.plist
@@ -373,14 +398,14 @@ Output using SHA256:
 93f901d8b1cc722e48d6bbe46f2e4ce38fb851f857131fa429eaed2489453b52
 ```
 
-Looking up the above hash in the lookup table (provided for download/API from SSP) will yield the list:
+Looking up the above hash in the lookup table (provided for static download/API from SSP) will yield the list:
 ```
 2U9PT9HC89.skadnetwork,4FZDC2EVR5.skadnetwork,7UG5ZH24HU.skadnetwork,mlmmfzh3r3.skadnetwork,T38B2KH725.skadnetwork,W9Q455WK68.skadnetwork,YCLNXRL5PM.skadnetwork
 ```
 
 ## Device
 
-If the IDFA is not available, DSPs require an alternative, limited-scope device ID in order to provide basic frequency capping functionality to advertisers. The [IDFV][5] is the same for apps from the same vendor but different across vendors. This field is only passed when IDFA is unavailable or all zeros and should.
+If the IDFA is not available, DSPs require an alternative, limited-scope identifier in order to provide basic frequency capping functionality to advertisers. The [IDFV][5] is the same for apps from the same vendor but different across vendors. Please refer to Apple's Guidelines for further information about when it can be accessed and used.
 
 DSPs may also want to understand what is the status of a user on iOS 14+. The `atts` field will pass the AppTrackingTransparency Framework's [authorization status][6].
 
