@@ -2,25 +2,35 @@
 
 Sponsors: MoPub, Fyber, Unity
 
+## Overview
+
+The IAB Tech Lab has introduced technical specifications aimed at adapting Apple’s [SKAdNetwork][1], a method for validating advertiser app installations, for programmatic ad buying. The OpenRTB object extensions, APIs and file formats described in this document together enable the advertising ecosystem to communicate and manage the information needed to use the SKAdNetwork capabilities in iOS 14 and above.
+
+The following are the updates provided in this document
+1. A Bid Request extension (`BidRequest.imp.ext.skadn`)
+2. A Bid Response extension (`BidResponse.seatbid.bid.ext.skadn`)
+3. A device extension (`BidRequest.device.ext`) to support IDFV and authorization status
+4. Guidance for app developers to help manage their Info.plists and work with various SDKs.
+5. A request for feedback on what we are considering for the future - more efficient options to communicate large lists of SKAdNetwork IDs (a hash + a SSP managed list, or a range + a Tech Lab managed "master list").
+
 ## SKAdNetwork Extension
-
-### Overview
-
-The IAB Tech Lab has introduced technical specifications aimed at adapting Apple’s SKAdNetwork, a method for validating advertiser app installations, for programmatic ad buying.
 
 The responsibilities of each participant when using the SKAdNetwork specifications are as follows.
 
 #### SSP/SDK responsibilities are to:
+
 1. Provide publishers with access to their buying entities SKAdNetwork IDs through a publicly hosted lists on their own business domain
-2. Support OpenRTB extension objects: `BidRequest.imp.ext.skadn` & `BidRequest.imp.ext.skadn`
+2. Support OpenRTB extension objects: `BidRequest.imp.ext.skadn` & `BidResponse.imp.ext.skadn`
 3. Provide signed ads to the source app by calling `loadProduct()` with the appropriate data returned on the bid response
 
 #### DSP/intermediary/buying entities responsibilities are to:
+
 1. Provide SKAdNetwork IDs to each supply partner
-2. Support OpenRTB extension objects: `BidRequest.imp.ext.skadn` & `BidRequest.imp.ext.skadn`
+2. Support OpenRTB extension objects: `BidRequest.imp.ext.skadn` & `BidResponse.imp.ext.skadn`
 3. Return all necessary signed parameters to SSP/SDK to facilitate ad signatures and receive install validation postbacks at endpoint established during SKAdNetwork registration with Apple
 
 #### Publishers/source app’s responsibilities are to:
+
 1. Add the ad network’s ID to its Info.plist
 2. Update Info.plist with new entries added to the SSP/SDK publicly hosted lists when publishing new app versions to the App Store
 
@@ -134,78 +144,6 @@ Used for direct SSP to DSP connections where a DSP wants to only consume their o
 }
 ```
 
-#### Object: `BidRequest.device.ext`
-
-If the IDFA is not available, DSPs require an alternative, limited-scope identifier in order to provide basic frequency capping functionality to advertisers. The [IDFV][5] is the same for apps from the same vendor but different across vendors. Please refer to Apple's Guidelines for further information about when it can be accessed and used.
-
-DSPs may also want to understand what is the status of a user on iOS 14+. The `atts` field will pass the AppTrackingTransparency Framework's [authorization status][6].
-
-<table>
-  <thead>
-    <tr>
-      <th>
-        Attribute
-      </th>
-      <th>
-        Description
-      </th>
-      <th>
-        Type
-      </th>
-      <th>
-        Example
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>
-        atts
-      </td>
-      <td>
-        (iOS Only) An integer passed to represent the app's app tracking authorization status, where <br>
-        0 = not determined <br>
-        1 = restricted <br>
-        2 = denied <br>
-        3 = authorized
-      </td>
-      <td>
-        integer
-      </td>
-      <td class="text-monospace">
-        "atts": 3
-      </td>
-    </tr>
-    <tr>
-      <td>
-        ifv
-      </td>
-      <td>
-        IDFV of device in that publisher. Only passed when IDFA is unavailable or all zeros. Listed as ifv to match ifa field format.
-      </td>
-      <td>
-        string
-      </td>
-      <td class="text-monospace">
-        "ifv": "336F2BC0-245B-4242-8029-83762AB47B15"
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-#### Example
-
-```
-{
-  "device": {
-    "ext": {
-      "atts": 3,
-      "ifv": "336F2BC0-245B-4242-8029-83762AB47B15"
-    }
-  }
-}
-```
-
 ### Bid response
 
 If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP could choose to add the following object to their bid response. Please refer to Apple’s documentation for submitting the [correctly formatted values][4]. If the object is present in the response, then SSP would submit the click data and signature to [loadProduct()][7] for attribution.
@@ -276,13 +214,13 @@ If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP co
         <code>itunesitem</code>
       </td>
       <td>
-        ID of advertiser’s app in Apple’s app store. Should match <code>BidResponse.bid.bundle</code>
+        ID of advertiser’s app in Apple’s app store. Should match <code>BidResponse.seatbid.bid.bundle</code>
       </td>
       <td>
         string
       </td>
       <td>
-        "itunesitem": "880047117"
+        "itunesitem": "123456789"
       </td>
     </tr>
     <tr>
@@ -290,7 +228,7 @@ If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP co
         <code>nonce</code>
       </td>
       <td>
-        An id unique to each ad response. Refer to Apple’s documentation for the [proper UUID format requirements][8]
+        An id unique to each ad response. Refer to Apple’s documentation for the <a href="https://developer.apple.com/documentation/storekit/skstoreproductparameteradnetworknonce">proper UUID format requirements</a>
       </td>
       <td>
         string
@@ -310,7 +248,7 @@ If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP co
         string
       </td>
       <td>
-        "sourceapp": "123456789"
+        "sourceapp": "880047117"
       </td>
     </tr>
     <tr>
@@ -371,9 +309,9 @@ If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP co
               "version": "2.0",
               "network": "cDkw7geQsH.skadnetwork",
               "campaign": "45",
-              "itunesitem": "880047117",
+              "itunesitem": "123456789",
               "nonce": "473b1a16-b4ef-43ad-9591-fcf3aefa82a7",
-              "sourceapp": "123456789",
+              "sourceapp": "880047117",
               "timestamp": "1594406341",
               "signature": "MEQCIEQlmZRNfYzKBSE8QnhLTIHZZZWCFgZpRqRxHss65KoFAiAJgJKjdrWdkLUOCCjuEx2RmFS7daRzSVZRVZ8RyMyUXg=="
             }
@@ -394,12 +332,100 @@ _Flow diagram of SSP SDK’s SKAdNetwork support. Objects in blue have a change 
 1. SSP SDK retrieves the SKAdNetworkItems from the publisher app’s Info.plist
 2. SDK makes ad request to ad server including SKAdNetworkItems
 3. SSP determines from Info.plist which DSPs have SKAdNetwork capabilities. Bid request to eligible DSPs includes the imp.ext.skadn object, defined above
-4. DSP responds, including `seatbid.bid.ext.skadn` if the campaign requires SKAdNetwork support
+4. DSP responds, including `BidResponse.seatbid.bid.ext.skadn` if the campaign requires SKAdNetwork support
 5. Ad response to SDK includes `skadn` object
 6. If the impression is shown and the user clicks, SSP calls `loadProduct()` with the appropriate data, including the DSP-signed signature. If valid, Apple will consider the app for install attribution
 7. Target app must register that user for SKAdNetwork attribution on app launch.
 8. (Optional). Target app can choose to provide an additional 6 bits of conversion value information.
 9. If SKAdNetwork determines that the DSP’s click led to the install, Apple will send a postback to the DSP’s registered endpoint with the ids of the source app, target app and campaign, and conversion value if provided by the target app.
+
+## Device Extension
+
+### Bid request
+
+#### Object: `BidRequest.device.ext`
+
+If the IDFA is not available, DSPs require an alternative, limited-scope identifier in order to provide basic frequency capping functionality to advertisers. The [IDFV][5] is the same for apps from the same vendor but different across vendors. Please refer to Apple's Guidelines for further information about when it can be accessed and used.
+
+DSPs may also want to understand what is the status of a user on iOS 14+. The `atts` field will pass the AppTrackingTransparency Framework's [authorization status][6].
+
+<table>
+  <thead>
+    <tr>
+      <th>
+        Attribute
+      </th>
+      <th>
+        Description
+      </th>
+      <th>
+        Type
+      </th>
+      <th>
+        Example
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        atts
+      </td>
+      <td>
+        (iOS Only) An integer passed to represent the app's app tracking authorization status, where <br>
+        0 = not determined <br>
+        1 = restricted <br>
+        2 = denied <br>
+        3 = authorized
+      </td>
+      <td>
+        integer
+      </td>
+      <td class="text-monospace">
+        "atts": 3
+      </td>
+    </tr>
+    <tr>
+      <td>
+        ifv
+      </td>
+      <td>
+        IDFV of the device in that publisher. Only passed when IDFA (<code>BidRequest.device.ifa</code>) is unavailable or all zeros. Listed as ifv to match ifa field format.
+      </td>
+      <td>
+        string
+      </td>
+      <td class="text-monospace">
+        "ifv": "336F2BC0-245B-4242-8029-83762AB47B15"
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+#### Example
+
+```
+{
+  "device": {
+    "ext": {
+      "atts": 2,
+      "ifv": "336F2BC0-245B-4242-8029-83762AB47B15"
+    }
+  }
+}
+```
+
+### DNT, LMT and App Tracking Transparency Guidance
+
+(iOS Only) An integer passed to represent the app's app tracking authorization status, where
+* 0 = not determined
+* 1 = restricted
+* 2 = denied
+* 3 = authorized
+
+For iOS 14 and above, the 'DNT' and 'LMT' parameters will be informed by the 'ATTS' status, where
+* "DNT" or "LMT" = 1 when "ATTS" = 0,1,2 and
+* "LMT" or "DNT" = 0 when "ATTS"= 3
 
 ## SKAdNetwork ID Lists for App Developers
 
@@ -519,7 +545,7 @@ All data in the file is serialized using JSON (JavaScript Object Notation)
     </tr>
     <tr>
       <td>
-        <code>ext</code>
+        <code>skadnetwork_ids</code>
       </td>
       <td>
         List of SKAdNetwork IDs
@@ -528,7 +554,7 @@ All data in the file is serialized using JSON (JavaScript Object Notation)
         object array (required)
       </td>
       <td>
-        skadnetwork_ids
+        [{ "entity_name": "DSP1", "entity_domain": "DSP1.com", "skadnetwork_id": "4FZDC2EVR5.skadnetwork", "creation_date": "2020-08-21T00:00:00Z" }]
       </td>
     </tr>
   </tbody>
@@ -624,13 +650,13 @@ All data in the file is serialized using JSON (JavaScript Object Notation)
       "entity_name": "DSP1",
       "entity_domain": "DSP1.com",
       "skadnetwork_id": "4FZDC2EVR5.skadnetwork",
-      "creation_date": 20200804
+      "creation_date": "2020-08-21T00:00:00Z"
     },
     {
       "entity_name": "MMP1",
       "entity_domain": "MMP1.com",
       "skadnetwork_id": "V72QYCH5UU.skadnetwork",
-      "creation_date":  20200804
+      "creation_date": "2020-08-25T00:00:00Z"
     }
   ]
 }
@@ -651,12 +677,16 @@ https://domain.com/skadnetworks.json
 
 Note: The following section is still in development. The IAB Tech Lab is looking for additional comments on this proposal.
 
+### Overview
+
 The responsibilities of each participant when using the SKAdNetwork specifications are as follows (in addition to the responsibilities at the beginning of this document).
 
-SSP/SDK responsibilities are to:
+#### SSP/SDK responsibilities are to:
+
 4. (Optional) Assist intermediary buyers with accessing the full list SKAdNetwork IDs on the bid request, provided in a compact hash format `skadnhash` and a `hashdomain` where the full list of SKAdNetwork IDs for that list can be retrieved
 
-DSP/intermediary/buying entities responsibilities are to:
+#### DSP/intermediary/buying entities responsibilities are to:
+
 4. (Optional) Pull in SKADNetwork hash tables if ingesting `skadnhash` and `hashdomain` values
 ### Bid request
 
@@ -818,4 +848,3 @@ It is recommended that the list of hashes are updated with new app versions data
 [5]: https://developer.apple.com/documentation/uikit/uidevice/1620059-identifierforvendor
 [6]: https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/authorizationstatus
 [7]:  https://developer.apple.com/documentation/storekit/skstoreproductviewcontroller/1620632-loadproduct
-[8]: https://developer.apple.com/documentation/storekit/skstoreproductparameteradnetworknonce
