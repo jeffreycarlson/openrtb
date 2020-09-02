@@ -24,11 +24,6 @@ The responsibilities of each participant when using the SKAdNetwork specificatio
 1. Add the ad network’s ID to its Info.plist
 2. Update Info.plist with new entries added to the SSP/SDK publicly hosted lists when publishing new app versions to the App Store
 
-
-Publishers/source app’s responsibilities are to:
-1. Add the ad network’s ID to its Info.plist
-2. Update Info.plist with new entries added to the SSP/SDK publicly hosted lists when publishing new app versions to the App Store
-
 ### Regulatory Guidance
 
 OpenRTB implementations will need to ensure compliance on every transaction with all applicable regional legislation.
@@ -745,7 +740,8 @@ Problem: How to represent large lists of IDs programmatically where there may no
 
 Solution/Implementation: SSP/SDK retrieves a list of all SKAdNetwork IDs and generates a standardized hash of the values. These hashes would be identical across SSP/SDK networks. A standardized list can easily be generated from the client device, simplifying transmission for prebid or other use cases.
 
-Generating the standard hash:
+#### Generating the standard hash
+
 1. Pull all SKAdNetwork IDs from Info.plist
 2. String to lower (assumes Apple SKAdNetwork IDs are case insensitive, checking with Apple to confirm)
 3. Sort Ascending
@@ -753,7 +749,7 @@ Generating the standard hash:
 5. Concatenate comma-separated (no whitespace)
 6. Use SHA256 function to hash IDs
 
-Example:
+Example
 
 Grab list from Info.plist:
 ```
@@ -784,24 +780,35 @@ Looking up the above hash in the lookup table (provided for static download/API 
 
 SSP/SDKs make the list of hashes for each app version available to DSPs through two methods:
 
-Method 1: List of hashes may be retrieved from API request calls from the SSP/SDK. API has the option for buying entities to only query data relevant to them. SSP/SDK to make API documentation available for their own platform.
+#### Method 1
 
+List of hashes may be retrieved from API request calls from the SSP/SDK. API has the option for buying entities to only query data relevant to them. SSP/SDK to make API documentation available for their own platform.
 
 API Endpoint:
 domain.com/skadnetwork?hash=HASHID
 
 File Format: JSON
 Recommended Data Format:
-{"hash": "key1", "skadnetwork_ids":["id1", "id2"]}
 
-Method 2: List of hashes may be pulled from a static file hosted at the SSP/SDKs designated location. SSPs/SDKs should use a standard file format for listing the hashes in the static file, as described below
+```
+{"hash": "key1", "skadnetwork_ids":["id1", "id2"]}
+```
+
+####  Method 2
+
+List of hashes may be pulled from a static file hosted at the SSP/SDKs designated location. SSPs/SDKs should use a standard file format for listing the hashes in the static file, as described below
 
 File Format: Text File
 Data Format:
+
+```
 {"hash": "key1", "skadnetwork_ids":["id1", "id2"]}
 {"hash": "key2", "skadnetwork_ids":["id1", "id3"]}
+```
 
-Best Practices: It is recommended that the list of hashes are updated with new app versions data at least once per hour. It is recommended that buying entities refresh their data at minimum every 12 hours and at maximum every 1 hour.
+#### Best Practices
+
+It is recommended that the list of hashes are updated with new app versions data at least once per hour. It is recommended that buying entities refresh their data at minimum every 12 hours and at maximum every 1 hour.
 
 
 [1]: https://developer.apple.com/documentation/storekit/skadnetwork
