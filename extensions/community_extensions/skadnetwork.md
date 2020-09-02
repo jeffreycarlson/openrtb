@@ -1,6 +1,8 @@
-## SKAdNetwork
+# SKAdNetwork
 
-Sponsors: MoPub, Fyber
+Sponsors: MoPub, Fyber, Unity
+
+## SKAdNetwork Extension
 
 ### Overview
 
@@ -8,20 +10,24 @@ The IAB Tech Lab has introduced technical specifications aimed at adapting Apple
 
 The responsibilities of each participant when using the SKAdNetwork specifications are as follows.
 
-SSP/SDK responsibilities are to:
-1. Provide publishers with access to their buying entities SKAdNetwork IDs through a publicly hosted JSON file on their own business domain (domain.com/skadnetworkids.json)
-2. Support OpeRTB extension objects: `BidRequest.imp.ext.skadn` & `BidRequest.imp.ext.skadn`
-3. Assist intermediary buyers with accessing the full list SKAdNetwork IDs on the bid request, provided in a compact hash format `skadnhsh`
-4. Provide signed ads to the source app by calling `loadProduct()` with the appropriate data returned on the bid response
+#### SSP/SDK responsibilities are to:
+1. Provide publishers with access to their buying entities SKAdNetwork IDs through a publicly hosted lists on their own business domain
+2. Support OpenRTB extension objects: `BidRequest.imp.ext.skadn` & `BidRequest.imp.ext.skadn`
+3. Provide signed ads to the source app by calling `loadProduct()` with the appropriate data returned on the bid response
 
-DSP/intermediary/buying entities responsibilities are to:
+#### DSP/intermediary/buying entities responsibilities are to:
 1. Provide SKAdNetwork IDs to each supply partner
-2. Support OpeRTB extension objects: `BidRequest.imp.ext.skadn` & `BidRequest.imp.ext.skadn`
+2. Support OpenRTB extension objects: `BidRequest.imp.ext.skadn` & `BidRequest.imp.ext.skadn`
 3. Return all necessary signed parameters to SSP/SDK to facilitate ad signatures and receive install validation postbacks at endpoint established during SKAdNetwork registration with Apple
+
+#### Publishers/source app’s responsibilities are to:
+1. Add the ad network’s ID to its Info.plist
+2. Update Info.plist with new entries added to the SSP/SDK publicly hosted lists when publishing new app versions to the App Store
+
 
 Publishers/source app’s responsibilities are to:
 1. Add the ad network’s ID to its Info.plist
-2. Update Info.plist with new entries added to SSP/SDK JSON file when publishing new app versions to the App Store
+2. Update Info.plist with new entries added to the SSP/SDK publicly hosted lists when publishing new app versions to the App Store
 
 ### Regulatory Guidance
 
@@ -29,9 +35,9 @@ OpenRTB implementations will need to ensure compliance on every transaction with
 
 ### Bid request
 
-If a DSP has at least one SKAdNetworkItem in the publisher app’s `Info.plist` we would include a new object in the bid request that provides the necessary information to create a signature. Object would only be present if both the SSP SDK version and the OS version (iOS 14.0+) support SKAdNetwork.
-
 #### Object: `BidRequest.imp.ext.skadn`
+
+If a DSP has at least one SKAdNetworkItem in the publisher app’s `Info.plist` we would include a new object in the bid request that provides the necessary information to create a signature. Object would only be present if both the SSP SDK version and the OS version (iOS 14.0+) support SKAdNetwork.
 
 <table>
   <thead>
@@ -70,7 +76,7 @@ If a DSP has at least one SKAdNetworkItem in the publisher app’s `Info.plist` 
         <code>sourceapp</code>
       </td>
       <td>
-        ID of publisher app in Apple’s App Store. Should match <code>BidRequest.app.bundle</code>
+        ID of publisher app in Apple’s App Store. Should match <code>app.bundle</code> in OpenRTB 2.x and <code>app.storeid</code> in AdCOM 1.x
       </td>
       <td>
         string
@@ -84,27 +90,13 @@ If a DSP has at least one SKAdNetworkItem in the publisher app’s `Info.plist` 
         <code>skadnetids</code>
       </td>
       <td>
-        A subset of SKAdNetworkItem entries in the publisher app’s info.plist that are relevant to the DSP.
+        A subset of SKAdNetworkItem entries in the publisher app’s Info.plist that are relevant to the DSP. Recommended that this list not exceed 20.
       </td>
       <td>
         array
       </td>
       <td>
         "skadnetids": ["cDkw7geQsH.skadnetwork", "qyJfv329m4.skadnetwork"]
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <code>skadnhsh</code>
-      </td>
-      <td>
-        A hash of the full list of SKAdNetworkItem entries. Hash table will be provided outside the bidstream for DSPs to consume. See <a href="#skadnetwork-ids-hash">SKAdNetwork IDs Hash</a> for more details.
-      </td>
-      <td>
-        string
-      </td>
-      <td class="text-monospace">
-        "93f901d8b1cc722e48d6bbe46f2e4ce38fb851f857131fa429eaed2489453b52"
       </td>
     </tr>
     <tr>
@@ -147,28 +139,81 @@ Used for direct SSP to DSP connections where a DSP wants to only consume their o
 }
 ```
 
-#### Example for `skadnhsh`
+#### Object: `BidRequest.device.ext`
 
-Used for intermediary SSP to SSP/DSP to DSP connections where a full list SKAdNetwork IDs is required. Provided in a compact hash format. See <a href="#skadnetwork-ids-hash">SKAdNetwork IDs Hash</a> for more details.
+If the IDFA is not available, DSPs require an alternative, limited-scope identifier in order to provide basic frequency capping functionality to advertisers. The [IDFV][5] is the same for apps from the same vendor but different across vendors. Please refer to Apple's Guidelines for further information about when it can be accessed and used.
+
+DSPs may also want to understand what is the status of a user on iOS 14+. The `atts` field will pass the AppTrackingTransparency Framework's [authorization status][6].
+
+<table>
+  <thead>
+    <tr>
+      <th>
+        Attribute
+      </th>
+      <th>
+        Description
+      </th>
+      <th>
+        Type
+      </th>
+      <th>
+        Example
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        atts
+      </td>
+      <td>
+        (iOS Only) An integer passed to represent the app's app tracking authorization status, where <br>
+        0 = not determined <br>
+        1 = restricted <br>
+        2 = denied <br>
+        3 = authorized
+      </td>
+      <td>
+        integer
+      </td>
+      <td class="text-monospace">
+        "atts": 3
+      </td>
+    </tr>
+    <tr>
+      <td>
+        ifv
+      </td>
+      <td>
+        IDFV of device in that publisher. Only passed when IDFA is unavailable or all zeros. Listed as ifv to match ifa field format.
+      </td>
+      <td>
+        string
+      </td>
+      <td class="text-monospace">
+        "ifv": "336F2BC0-245B-4242-8029-83762AB47B15"
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+#### Example
+
 ```
 {
-  "imp": [
-    {
-      "ext": {
-        "skadn": {
-          "version": "2.0",
-          "sourceapp": "880047117",
-          "skadnhsh": "93f901d8b1cc722e48d6bbe46f2e4ce38fb851f857131fa429eaed2489453b52"
-        }
-      }
+  "device": {
+    "ext": {
+      "atts": 3,
+      "ifv": "336F2BC0-245B-4242-8029-83762AB47B15"
     }
-  ]
+  }
 }
 ```
 
 ### Bid response
 
-If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP could choose to add the following object to their bid response. If the object is present in the response, then SSP would submit the [click data and signature][4] to the productView for attribution.
+If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP could choose to add the following object to their bid response. Please refer to Apple’s documentation for submitting the [correctly formatted values][4]. If the object is present in the response, then SSP would submit the click data and signature to [loadProduct()][7] for attribution.
 
 #### Object: `BidResponse.seatbid.bid.ext.skadn`
 
@@ -250,7 +295,7 @@ If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP co
         <code>nonce</code>
       </td>
       <td>
-        An id unique to each ad response
+        An id unique to each ad response. Refer to Apple’s documentation for the [proper UUID format requirements][8]
       </td>
       <td>
         string
@@ -361,7 +406,340 @@ _Flow diagram of SSP SDK’s SKAdNetwork support. Objects in blue have a change 
 8. (Optional). Target app can choose to provide an additional 6 bits of conversion value information.
 9. If SKAdNetwork determines that the DSP’s click led to the install, Apple will send a postback to the DSP’s registered endpoint with the ids of the source app, target app and campaign, and conversion value if provided by the target app.
 
-### SKAdNetwork IDs Hash
+## SKAdNetwork ID Lists for App Developers
+
+### Description
+
+SKAdNetwork ID Lists is a list of SKAdNetwork IDs published by a hosting company (e.g. SSP/SDK). App developers who work with the hosting company should use this file when generating a consolidated list of SKAdNetwork IDs to include in their app’s Info.plist file. For convenience, the SKAdNetwork IDs are provided in both XML and JSON formats. See each format for details and use cases.
+
+### URL Format
+
+Hosting companies should publish the SKAdNetwork ID files at the following locations:
+* domain.com/skadnetworkids.xml
+* domain.com/skadnetworkids.json
+
+If the server response indicates an HTTP/HTTPS redirect (301, 302, 307 status codes), entities
+should follow the redirect and consume the data as authoritative for the source of the redirect. Multiple redirects are valid.
+
+### skadnetworkids.xml
+
+The XML uses Apple’s Info.plist format. This provides developers with SKAdNetwork IDs in the exact SKAdNetworkItems array format for easy copy/paste into their Info.plist file.
+
+#### File Format
+All data in the file is serialized using XML (Extensible Markup Language)
+
+#### Objects
+Please refer to [Apple documentation][2] for details.
+
+#### Example
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <key>SKAdNetworkItems</key>
+    <array>
+        <dict>
+            <key>SKAdNetworkIdentifier</key>
+            <string>4DZT52R2T5.skadnetwork</string>
+        </dict>
+        <dict>
+            <key>SKAdNetworkIdentifier</key>
+            <string>bvpn9ufa9b.skadnetwork</string>
+        </dict>
+    </array>
+</plist>
+```
+
+### skadnetworkids.json
+
+The JSON provides developers with additional metadata about the SKAdNetwork IDs that they will add to the Info.plist SKAdNetworkItems array. Helpful data like the entity name will ensure app developers know who the owners of each SKAdNetwork ID.
+
+#### File Format
+All data in the file is serialized using JSON (JavaScript Object Notation)
+
+#### Objects
+
+##### Object: Parent top-level object
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        <strong>Attribute</strong>
+      </td>
+      <td>
+        <strong>Description</strong>
+      </td>
+      <td>
+        <strong>Type</strong>
+      </td>
+      <td>
+        <strong>Example</strong>
+      </td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <code>company_name</code>
+      </td>
+      <td>
+        Name describing the hosting company
+      </td>
+      <td>
+        string (recommended)
+      </td>
+      <td>
+        SSP
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>company_address</code>
+      </td>
+      <td>
+        The business address of the hosting company
+      </td>
+      <td>
+        string
+      </td>
+      <td>
+        SSP, 1234 Advertising Lane, San Francisco, CA 94121
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>company_domain</code>
+      </td>
+      <td>
+        The business website of the hosting company
+      </td>
+      <td>
+        string (required)
+      </td>
+      <td>
+        company.com
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>ext</code>
+      </td>
+      <td>
+        List of SKAdNetwork IDs
+      </td>
+      <td>
+        object array (required)
+      </td>
+      <td>
+        skadnetwork_ids
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+##### Object: skadnetwork_ids
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        <strong>Attribute</strong>
+      </td>
+      <td>
+        <strong>Description</strong>
+      </td>
+      <td>
+        <strong>Type</strong>
+      </td>
+      <td>
+        <strong>Example</strong>
+      </td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <code>entity_name</code>
+      </td>
+      <td>
+        Name of entity with SKAdNetwork ID
+      </td>
+      <td>
+        string (recommended)
+      </td>
+      <td>
+        DSP Name
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>entity_domain</code>
+      </td>
+      <td>
+        Domain of the entity with SKAdNetwork ID. For joint SKAdNetwork ID, entity owning Apple Developer account should be listed (this field may not be unique)
+      </td>
+      <td>
+        string (recommended)
+      </td>
+      <td>
+        DSP.com
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>skadnetwork_id</code>
+      </td>
+      <td>
+        SKAdNetwork ad network ID (this field should be unique)
+      </td>
+      <td>
+        string (required)
+      </td>
+      <td>
+        4GWI8V3KWU.skadnetwork
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>creation_date</code>
+      </td>
+      <td>
+        Date entity(s) added to JSON file
+      </td>
+      <td>
+        String in ISO 8601 (YYYY-MM-DDThh:mm:ssZ)
+      </td>
+      <td>
+        2020-08-21T00:00:00Z
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+##### Example
+```
+{
+  "company_name": "SSP",
+  "company_address": "SSP, address, country",
+  "company_domain": "company.com",
+  "skadnetwork_ids": [
+    {
+      "entity_name": "DSP1",
+      "entity_domain": "DSP1.com",
+      "skadnetwork_id": "4FZDC2EVR5.skadnetwork",
+      "creation_date": 20200804
+    },
+    {
+      "entity_name": "MMP1",
+      "entity_domain": "MMP1.com",
+      "skadnetwork_id": "V72QYCH5UU.skadnetwork",
+      "creation_date":  20200804
+    }
+  ]
+}
+```
+
+### SDK Guidance
+
+SDKs and/or app developers are encouraged to develop scripts to automate the process of retrieving the SKAdNetwork IDs from each SDK partner by parsing either the XML or JSON files to generate a complete list of IDs for their app’s Info.plist file. To aid in that process of ID retrieval from each SDK partner, include a file in your SDK named SKAdNetworks (with no extension), with each line in the file pointing to a publicly available SKAdNetworks.xml or SKAdNetworks.json.
+
+#### Example
+
+```
+https://domain.com/skadnetworks.xml
+https://domain.com/skadnetworks.json
+```
+
+## SKAdNetwork Hash Proposal
+
+Note: The following section is still in development. The IAB Tech Lab is looking for additional comments on this proposal.
+
+The responsibilities of each participant when using the SKAdNetwork specifications are as follows (in addition to the responsibilities at the beginning of this document).
+
+SSP/SDK responsibilities are to:
+4. (Optional) Assist intermediary buyers with accessing the full list SKAdNetwork IDs on the bid request, provided in a compact hash format `skadnhash` and a `hashdomain` where the full list of SKAdNetwork IDs for that list can be retrieved
+
+DSP/intermediary/buying entities responsibilities are to:
+4. (Optional) Pull in SKADNetwork hash tables if ingesting `skadnhash` and `hashdomain` values
+### Bid request
+
+#### Object: `BidRequest.imp.ext.skadn`
+
+If a DSP has at least one SKAdNetworkItem in the publisher app’s `Info.plist` we would include a new object in the bid request that provides the necessary information to create a signature. Object would only be present if both the SSP SDK version and the OS version (iOS 14.0+) support SKAdNetwork.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        <strong>Attribute</strong>
+      </td>
+      <td>
+        <strong>Description</strong>
+      </td>
+      <td>
+        <strong>Type</strong>
+      </td>
+      <td>
+        <strong>Example</strong>
+      </td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <code>skadnhash</code>
+      </td>
+      <td>
+        A hash of the full list of SKAdNetworkItem entries. Hash table will be provided outside the bidstream for DSPs to consume. See <a href="#skadnetwork-ids-hash">SKAdNetwork IDs Hash</a> for more details.
+      </td>
+      <td>
+        string
+      </td>
+      <td class="text-monospace">
+        "93f901d8b1cc722e48d6bbe46f2e4ce38fb851f857131fa429eaed2489453b52"
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>hashdomain</code>
+      </td>
+      <td>
+        The domain of the entity where the hash list can be retrieved. Should be sent whenever <code>skadnhash</code> is present in the bid request so DSPs can identify where to lookup the corresponding hash list.
+      </td>
+      <td>
+        string
+      </td>
+      <td class="text-monospace">
+        "example.com"
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+#### Example for `skadnhash`
+
+Used for intermediary SSP to SSP/DSP to DSP connections where a full list SKAdNetwork IDs is required. Provided in a compact hash format. See <a href="#skadnetwork-ids-hash">SKAdNetwork IDs Hash</a> for more details.
+
+```
+{
+  "imp": [
+    {
+      "ext": {
+        "skadn": {
+          "version": "2.0",
+          "sourceapp": "880047117",
+          "skadnhash": "93f901d8b1cc722e48d6bbe46f2e4ce38fb851f857131fa429eaed2489453b52",
+          "hashdomain": "example.com"
+        }
+      }
+    }
+  ]
+}
+```
+
+### Generating the SKAdNetwork Hash
 
 Problem: How to represent large lists of IDs programmatically where there may not be a standard list or there is publisher customization?
 
@@ -402,82 +780,29 @@ Looking up the above hash in the lookup table (provided for static download/API 
 ```
 2U9PT9HC89.skadnetwork,4FZDC2EVR5.skadnetwork,7UG5ZH24HU.skadnetwork,mlmmfzh3r3.skadnetwork,T38B2KH725.skadnetwork,W9Q455WK68.skadnetwork,YCLNXRL5PM.skadnetwork
 ```
+### Retrieving the SKAdNetwork Hash List
 
-## Device
+SSP/SDKs make the list of hashes for each app version available to DSPs through two methods:
 
-If the IDFA is not available, DSPs require an alternative, limited-scope identifier in order to provide basic frequency capping functionality to advertisers. The [IDFV][5] is the same for apps from the same vendor but different across vendors. Please refer to Apple's Guidelines for further information about when it can be accessed and used.
+Method 1: List of hashes may be retrieved from API request calls from the SSP/SDK. API has the option for buying entities to only query data relevant to them. SSP/SDK to make API documentation available for their own platform.
 
-DSPs may also want to understand what is the status of a user on iOS 14+. The `atts` field will pass the AppTrackingTransparency Framework's [authorization status][6].
 
-### Bid request
+API Endpoint:
+domain.com/skadnetwork?hash=HASHID
 
-#### Object: `BidRequest.device.ext`
+File Format: JSON
+Recommended Data Format:
+{"hash": "key1", "skadnetwork_ids":["id1", "id2"]}
 
-<table>
-  <thead>
-    <tr>
-      <th>
-        Attribute
-      </th>
-      <th>
-        Description
-      </th>
-      <th>
-        Type
-      </th>
-      <th>
-        Example
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>
-        atts
-      </td>
-      <td>
-        (iOS Only) An integer passed to represent the app's app tracking authorization status, where <br>
-        0 = not determined <br>
-        1 = restricted <br>
-        2 = denied <br>
-        3 = authorized
-      </td>
-      <td>
-        integer
-      </td>
-      <td class="text-monospace">
-        "atts": 3
-      </td>
-    </tr>
-    <tr>
-      <td>
-        ifv
-      </td>
-      <td>
-        IDFV of device in that publisher. Only passed when IDFA is unavailable or all zeros. Listed as ifv to match ifa field format.
-      </td>
-      <td>
-        string
-      </td>
-      <td class="text-monospace">
-        "ifv": "336F2BC0-245B-4242-8029-83762AB47B15"
-      </td>
-    </tr>
-  </tbody>
-</table>
+Method 2: List of hashes may be pulled from a static file hosted at the SSP/SDKs designated location. SSPs/SDKs should use a standard file format for listing the hashes in the static file, as described below
 
-#### Example
+File Format: Text File
+Data Format:
+{"hash": "key1", "skadnetwork_ids":["id1", "id2"]}
+{"hash": "key2", "skadnetwork_ids":["id1", "id3"]}
 
-```
-{
-  "device": {
-    "ext": {
-      "atts": 3,
-      "ifv": "336F2BC0-245B-4242-8029-83762AB47B15"
-    }
-  }
-}
-```
+Best Practices: It is recommended that the list of hashes are updated with new app versions data at least once per hour. It is recommended that buying entities refresh their data at minimum every 12 hours and at maximum every 1 hour.
+
 
 [1]: https://developer.apple.com/documentation/storekit/skadnetwork
 [2]: https://developer.apple.com/documentation/storekit/skadnetwork/configuring_the_participating_apps
@@ -485,3 +810,5 @@ DSPs may also want to understand what is the status of a user on iOS 14+. The `a
 [4]: https://developer.apple.com/documentation/storekit/skadnetwork/generating_the_signature_to_validate_an_installation
 [5]: https://developer.apple.com/documentation/uikit/uidevice/1620059-identifierforvendor
 [6]: https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/authorizationstatus
+[7]:  https://developer.apple.com/documentation/storekit/skstoreproductviewcontroller/1620632-loadproduct
+[8]: https://developer.apple.com/documentation/storekit/skstoreproductparameteradnetworknonce
