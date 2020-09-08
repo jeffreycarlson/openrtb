@@ -7,12 +7,12 @@ Sponsors: MoPub, Fyber, Unity
 The IAB Tech Lab has introduced technical specifications aimed at adapting Apple’s [SKAdNetwork][1], a method for validating advertiser app installations, for programmatic ad buying. The OpenRTB object extensions, APIs and file formats described in this document together enable the advertising ecosystem to communicate and manage the information needed to use the SKAdNetwork capabilities in iOS 14 and above.
 
 The following are the updates provided in this document
-1. A SKAdNetwork extension to support programmatic buying
+1. A [SKAdNetwork extension][10] to support programmatic buying
    * Bid Request extension (`BidRequest.imp.ext.skadn`)
    * A Bid Response extension (`BidResponse.seatbid.bid.ext.skadn`)
-2. A device extension (`BidRequest.device.ext`) to support IDFV and authorization status
-3. Guidance for app developers to help manage their Info.plists and work with various SDKs.
-4. A request for feedback on what we are considering for the future - more efficient options to communicate large lists (over 20) of SKAdNetwork IDs.
+2. A [Device extension][11] (`BidRequest.device.ext`) to support IDFV and authorization status
+3. Guidance for app developers to help [manage their Info.plists][12] and work with various SDKs.
+4. A [request for feedback][13] on what we are considering for the future - more efficient options to communicate large lists (over 20) of SKAdNetwork IDs.
    * Separate SSP managed SKAdNetwork ID lists + APIs for mapping, and standardized hash to be passed on the bid request or
    * Tech Lab managed "common list" for SKAdNetwork IDs with universal assigned range ID values per SKAdNetwork to be passed on the bid request
 
@@ -679,8 +679,8 @@ https://domain.com/skadnetworks.json
 Note: The below sections are still in development. The IAB Tech Lab is looking for additional comments on these proposals.
 
 These proposals attempt to tackle how to transmit large lists of SKAdNetwork IDs across more complex programmatic supply chains where the use of `skadnetids` is not feasible.
-* `skadnhash`: Used to transmit a hash ID that can be tied back to a full list in a hash table. Primary use case is “intermediary” SSP to SSP to DSP integrations where sending a subset of IDs is not feasible. See SKAdNetwork Hash List Proposal below.
-* `skadnrng`: Used to transmit a range of IDs supported by an IAB Tech Lab SKAdNetwork ID List. This list would serve a similar purpose that the TCF 2.0 [Global Vendor List][8] serves to identify common IDs in a compact range. Primary use case is “intermediary” SSP to SSP to DSP integrations where sending a subset of IDs is not feasible. See IABTL SKAdNetwork ID List Proposal below.
+* [SKAdNetwork Hash List Proposal][14]: Used to transmit a hash ID that can be tied back to a full list in a hash table via `skadnhash` and `hashdomain`. Primary use case is “intermediary” SSP to SSP to DSP integrations where sending a subset of IDs is not feasible. See SKAdNetwork Hash List Proposal below.
+* [IABTL SKAdNetwork ID List Proposal][15]: Used to transmit a range of IDs supported by an IAB Tech Lab SKAdNetwork ID List via `skadnrng`. This list would serve a similar purpose that the TCF 2.0 [Global Vendor List][8] serves to identify common IDs in a compact range. Primary use case is “intermediary” SSP to SSP to DSP integrations where sending a subset of IDs is not feasible. See IABTL SKAdNetwork ID List Proposal below.
 
 ## SKAdNetwork Hash List Proposal
 
@@ -967,3 +967,9 @@ Used for intermediary SSP to SSP/DSP to DSP connections where support for the IA
 [7]:  https://developer.apple.com/documentation/storekit/skstoreproductviewcontroller/1620632-loadproduct
 [8]: https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/
 [9]: #skadnetwork-id-lists-for-app-developers
+[10]: #skadnetwork-extension
+[11]: #device-extension
+[12]: #skadnetwork-id-lists-for-app-developers
+[13]: #proposals-for-large-skadnetwork-id-list-management
+[14]: #skadnetwork-hash-list-proposal
+[15]: #iabtl-skadnetwork-id-list-proposal
