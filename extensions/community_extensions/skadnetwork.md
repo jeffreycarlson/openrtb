@@ -9,10 +9,10 @@ The IAB Tech Lab has introduced technical specifications aimed at adapting Apple
 The following are the updates provided in this document
 1. A [SKAdNetwork extension][10] to support programmatic buying
    * Bid Request extension (`BidRequest.imp.ext.skadn`)
-   * A Bid Response extension (`BidResponse.seatbid.bid.ext.skadn`)
+   * Bid Response extension (`BidResponse.seatbid.bid.ext.skadn`)
 2. A [Device extension][11] (`BidRequest.device.ext`) to support IDFV and authorization status
 3. Guidance for app developers to help [manage their Info.plists][12] and work with various SDKs.
-4. A [request for feedback][13] on what we are considering for the future - more efficient options to communicate large lists (over 20) of SKAdNetwork IDs.
+4. A [request for feedback][13] on what we are considering for the future - more efficient options to communicate large lists (over 10) of SKAdNetwork IDs.
    * Separate SSP managed SKAdNetwork ID lists + APIs for mapping, and standardized hash to be passed on the bid request or
    * Tech Lab managed "common list" for SKAdNetwork IDs with universal assigned range ID values per SKAdNetwork to be passed on the bid request
 
@@ -100,7 +100,7 @@ If a DSP has at least one SKAdNetworkItem in the publisher app’s `Info.plist` 
         <code>skadnetids</code>
       </td>
       <td>
-        A subset of SKAdNetworkItem entries in the publisher app’s Info.plist that are relevant to the DSP. Recommended that this list not exceed 20.
+        A subset of SKAdNetworkItem entries in the publisher app’s Info.plist that are relevant to the DSP. Recommended that this list not exceed 10.
       </td>
       <td>
         array
@@ -422,7 +422,7 @@ DSPs may also want to understand what is the status of a user on iOS 14+. The `a
 
 ### DNT, LMT and App Tracking Transparency Guidance
 
-For iOS 14 and above, the 'DNT' and 'LMT' parameters will be informed by the 'ATTS' status, where
+(Pending iOS 14 Golden Master) For iOS 14 and above, the 'DNT' and 'LMT' parameters will be informed by the 'ATTS' status, where
 * "DNT" or "LMT" = 1 when "ATTS" = 0, 1, 2
 * "LMT" or "DNT" = 0 when "ATTS" = 3
 
