@@ -679,8 +679,8 @@ https://domain.com/skadnetworks.json
 Note: The below sections are still in development. The IAB Tech Lab is looking for additional comments on these proposals.
 
 These proposals attempt to tackle how to transmit large lists of SKAdNetwork IDs across more complex programmatic supply chains where the use of `skadnetids` is not feasible.
-* [SKAdNetwork Hash List Proposal][14]: Used to transmit a hash ID that can be tied back to a full list in a hash table via `skadnhash` and `hashdomain`. Primary use case is “intermediary” SSP to SSP to DSP integrations where sending a subset of IDs is not feasible. See SKAdNetwork Hash List Proposal below.
-* [IABTL SKAdNetwork ID List Proposal][15]: Used to transmit a range of IDs supported by an IAB Tech Lab SKAdNetwork ID List via `skadnrng`. This list would serve a similar purpose that the TCF 2.0 [Global Vendor List][8] serves to identify common IDs in a compact range. Primary use case is “intermediary” SSP to SSP to DSP integrations where sending a subset of IDs is not feasible. See IABTL SKAdNetwork ID List Proposal below.
+* [SKAdNetwork Hash List Proposal][14]: Used to transmit a hash ID that can be tied back to a full list in a hash table via `skadnhash` and `hashdomain`. Primary use case is “intermediary” SSP to SSP to DSP integrations where sending a subset of IDs is not feasible.
+* [IABTL SKAdNetwork ID List Proposal][15]: Used to transmit a range of IDs supported by an IAB Tech Lab SKAdNetwork ID List via `skadnrng`. This list would serve a similar purpose that the TCF 2.0 [Global Vendor List][8] serves to identify common IDs in a compact range. Primary use case is “intermediary” SSP to SSP to DSP integrations where sending a subset of IDs is not feasible.
 
 ## SKAdNetwork Hash List Proposal
 
@@ -699,7 +699,7 @@ The responsibilities of each participant when using the SKAdNetwork specificatio
 
 #### DSP/intermediary/buying entities responsibilities are to:
 
-4. (Optional) Pull in SKADNetwork hash tables from SSP/SDK API, if ingesting `skadnhash` and `hashdomain` values
+4. (Optional) Pull in SKADNetwork hash tables from each SSP/SDK API separately, if ingesting `skadnhash` and `hashdomain` values
 
 ### Generating the SKAdNetwork standard hash
 
@@ -740,7 +740,7 @@ Looking up the above hash in the lookup table (provided for static download/API 
 
 ### Retrieving the SKAdNetwork Hash List
 
-SSP/SDKs make the list of hashes for each app version available to DSPs through two methods:
+SSP/SDKs make their own separate list of hashes for each app version available to DSPs through two methods:
 
 #### Method 1
 
