@@ -8,13 +8,13 @@ The IAB Tech Lab has introduced technical specifications aimed at adapting Apple
 
 The following are the updates provided in this document
 1. A SKAdNetwork extension to support programmatic buying
-  * Bid Request extension (`BidRequest.imp.ext.skadn`)
-  * A Bid Response extension (`BidResponse.seatbid.bid.ext.skadn`)
+   * Bid Request extension (`BidRequest.imp.ext.skadn`)
+   * A Bid Response extension (`BidResponse.seatbid.bid.ext.skadn`)
 2. A device extension (`BidRequest.device.ext`) to support IDFV and authorization status
 3. Guidance for app developers to help manage their Info.plists and work with various SDKs.
 4. A request for feedback on what we are considering for the future - more efficient options to communicate large lists (over 20) of SKAdNetwork IDs.
-  * Separate SSP managed SKAdNetwork ID lists + APIs for mapping, and standardized hash to be passed on the bid request or
-  * Tech Lab managed "common list" for SKAdNetwork IDs with universal assigned range ID values per SKAdNetwork to be passed on the bid request
+   * Separate SSP managed SKAdNetwork ID lists + APIs for mapping, and standardized hash to be passed on the bid request or
+   * Tech Lab managed "common list" for SKAdNetwork IDs with universal assigned range ID values per SKAdNetwork to be passed on the bid request
 
 ## SKAdNetwork Extension
 
@@ -866,7 +866,7 @@ The responsibilities of each participant when using the SKAdNetwork specificatio
 
 ### IABTL SKAdNetwork ID Format
 
-This list would use the same format as the [SKANetwork ID Lists for App Developers][9] with the possible addition of an "id" field for the JSON metadata that would autoincrement for each added SKAdNetwork ID.
+This list would use the same format as the [SKANetwork ID Lists for App Developers][9] with the possible addition of an "id" field for the JSON metadata that would autoincrement for each added SKAdNetwork ID. The details of how this list would be maintained (pull requests / submission, who would check and approve etc) are yet to be determined. We would like to first get feedback on the need for (and arguments against) such a centralized list.
 
 #### Example
 
