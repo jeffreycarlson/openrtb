@@ -170,6 +170,7 @@ If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP co
       <td>
         <strong>Example</strong>
       </td>
+    </tr>
   </thead>
   <tbody>
     <tr>
@@ -457,6 +458,7 @@ Please refer to [Apple documentation][2] for details.
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
+<dict>
     <key>SKAdNetworkItems</key>
     <array>
         <dict>
@@ -468,6 +470,7 @@ Please refer to [Apple documentation][2] for details.
             <string>bvpn9ufa9b.skadnetwork</string>
         </dict>
     </array>
+</dict>
 </plist>
 ```
 
