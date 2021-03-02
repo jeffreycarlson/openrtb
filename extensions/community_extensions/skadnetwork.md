@@ -105,7 +105,7 @@ If a DSP has at least one SKAdNetworkItem in the publisher app’s `Info.plist` 
         array of strings
       </td>
       <td>
-        "versions": ["2.0", "2.1"]
+        "versions": ["2.0", "2.1", "2.2"]
       </td>
     </tr>
     <tr>
@@ -266,7 +266,7 @@ Used for direct SSP to DSP connections where a DSP wants to only consume their o
     {
       "ext": {
         "skadn": {
-          "versions": ["2.0", "2.1"],
+          "versions": ["2.0", "2.1", "2.2"],
           "sourceapp": "880047117",
           "skadnetlist":{
               "max":306,
@@ -287,7 +287,7 @@ Used for direct SSP to DSP connections where a DSP wants to only consume their o
 
 If the bid request included the `BidRequest.imp.ext.skadn` object, then a DSP could choose to add the following object to their bid response. Please refer to Apple’s documentation for submitting the [correctly formatted values][4]. If the object is present in the response, then SSP would submit the click data and signature to [loadProduct()][7] for attribution.
 
-Note: Due to breaking changes introduced by Apple in SKAdNetwork v2.2 to support [View Through Attribution and fidelity-type][14], several structural changes to the bid response were required to support multiple fidelity types.
+**Note:** Due to breaking changes introduced by Apple in SKAdNetwork v2.2 to support [View Through Attribution and fidelity-type][14], several structural changes to the bid response were required to support multiple fidelity types.
 
 #### Object: `BidResponse.seatbid.bid.ext.skadn`
 
